@@ -23,6 +23,9 @@ aurora-faucet/
 │   │   └── withdraw.go
 │   ├── services/
 │   │   └── eth.go
+│   ├── utils/
+│   │   └── response.go
+
 ```
 
 ## 环境要求
@@ -43,8 +46,13 @@ cd go-aurora-faucet
 创建 .env 文件并添加以下内容：
 
 ```plaintext
-PRIVATE_KEY=YOUR_PRIVATE_KEY
-RPC_URL=https://mainnet.aurora.dev
+PRIVATE_KEY=YOUR_PRIVATE_KEY                   // 转账地址私钥
+WITHDRAW_AMOUNT=0.0001                         // 转账ETH（ETH 单位）
+PORT=8080                                      // 启动端口
+WITHDRAW_LIMIT=24                              // 领水间隔（小时为单位）
+AURORA_TESTNET_RPC_URL=https://testnet.aurora.dev   // 测试网络地址（目前通过前端传参，但先放着）
+AURORA_TESTNET_EXPLORER_URL=https://testnet.aurorascan.dev  // 测试网络浏览器地址
+
 ```
 
 安装依赖：
@@ -72,23 +80,35 @@ make run
 使用 `curl` 或 Postman 发送请求：
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"address":"0xRecipientAddress", "amount":"0.0001"}' http://localhost:8080/withdraw
+curl -X POST -H "Content-Type: application/json" -d '{"address":"0xRecipientAddress", "network":"https://testnet.aurora.dev"}' http://localhost:8080/request
 ```
 
-address (string, required): 接收转账的以太坊地址。
-amount (float64, required): 转账的金额，以 ETH 为单位。
+```bash
+{
+  "address": "xxxxxxx",
+  "network": "https://testnet.aurora.dev"
+}
+```
+
+
+
+address (string, required): 接收ETH地址。\
+network (string, required): 接收ETH网络地址
 
 ## 响应案例
 
 ```json
 {
-    "hash": "0xTransactionHash"
+  "explorer_url": "https://testnet.aurorascan.dev/tx/xxxxxx",
+  "success": true,
+  "tx_id": "xxxxx"
 }
 ```
 
 ```json
 {
-    "error": "xxxxxxxxxxxx"
+  "message": "24小时内已经领取过",
+  "success": false
 }
 ```
 
@@ -103,6 +123,5 @@ NewLondonSigner签名方法
 ## 注意事项
 
 ```plaintext
-确保 `.env` 文件中的私钥和 RPC URL 正确无误。
-如果使用的是本地开发链，请确保该链已经启动，并且 RPC URL 指向正确的地址。
+确保 `.env` 文件中的信息无误
 ```
