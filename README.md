@@ -47,9 +47,7 @@ cd go-aurora-faucet
 
 ```plaintext
 PRIVATE_KEY=YOUR_PRIVATE_KEY                   // 转账地址私钥
-WITHDRAW_AMOUNT=0.0001                         // 转账ETH（ETH 单位）
 PORT=8080                                      // 启动端口
-WITHDRAW_LIMIT=24                              // 领水间隔（小时为单位）
 AURORA_TESTNET_RPC_URL=https://testnet.aurora.dev   // 测试网络地址（目前通过前端传参，但先放着）
 AURORA_TESTNET_EXPLORER_URL=https://testnet.aurorascan.dev  // 测试网络浏览器地址
 
@@ -86,14 +84,16 @@ curl -X POST -H "Content-Type: application/json" -d '{"address":"0xRecipientAddr
 ```bash
 {
   "address": "xxxxxxx",
-  "network": "https://testnet.aurora.dev"
+  "network": "https://testnet.aurora.dev",
+  "amount": 0.0001
 }
 ```
 
 
 
 address (string, required): 接收ETH地址。\
-network (string, required): 接收ETH网络地址
+network (string, required): 接收ETH网络地址 \
+amount (float64, required): 提取金额
 
 ## 响应案例
 
@@ -107,7 +107,7 @@ network (string, required): 接收ETH网络地址
 
 ```json
 {
-  "message": "24小时内已经领取过",
+  "message": "余额不足",
   "success": false
 }
 ```
