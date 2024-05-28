@@ -71,11 +71,24 @@ func (s *ETHService) SendETH(toAddress string, amount *big.Int) (string, error) 
 	if err != nil {
 		return "", fmt.Errorf("无法获取 nonce: %v", err)
 	}
+
+	gasLimit := big.NewInt(21000)
 	gasPrice, err := s.client.SuggestGasPrice(context.Background())
 	if err != nil {
 
 		return "", fmt.Errorf("无法获取 gasPrice: %v", err)
 	}
+
+	balance, err := s.client.BalanceAt(context.Background(), fromAddress, nil)
+	if err != nil {
+		return "", fmt.Errorf("无法获取账户余额: %v", err)
+	}
+
+	totalCast := new(big.Int).Add(amount, new(big.Int).Mul(gasPrice, gasLimit))
+	if balance.Cmp(totalCast) < 0 {
+		return "", fmt.Errorf("余额不足")
+	}
+
 	// 创建交易
 	to := common.HexToAddress(toAddress)
 	tx := types.NewTx(&types.LegacyTx{
