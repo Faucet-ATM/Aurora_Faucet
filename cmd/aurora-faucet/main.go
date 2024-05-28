@@ -26,5 +26,5 @@ func main() {
 	router.POST("/request", withdrawHandler.Handle)
 
 	// 启动服务器
-	log.Fatal(router.Run(":8080"))
+	log.Fatal(router.Run(":" + cfg.Port))
 }
